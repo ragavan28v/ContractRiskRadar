@@ -1,0 +1,82 @@
+# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for details
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.venv/
+.env
+*.sqlite3
+*.db
+
+# VSCode
+.vscode/
+
+# Node
+node_modules/
+.npm/
+
+# Next.js
+.next/
+out/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.dockerignore
+Dockerfile
+
+dist/
+build/
+
+# Misc
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Ignore test coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+
+# Ignore frontend build artifacts
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+
+# Ignore backend build artifacts
+backend/.venv/
+backend/__pycache__/
+backend/.env
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.coverage
+backend/htmlcov/
+backend/.vscode/
+backend/.DS_Store
+backend/.db
+backend/.sqlite3
+
+# Ignore large files
+*.zip
+*.tar.gz
+*.tar
+*.rar
+*.7z
+*.gz
+*.tgz
+*.egg-info/
+
+# Ignore IDE files
+.idea/
+*.iml
+*.sublime*
+*.code-workspace
