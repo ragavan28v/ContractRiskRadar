@@ -17,7 +17,7 @@ export default function UploadPanel({ onUploaded }: Props) {
   const [titleError, setTitleError] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
 
-  const isFormValid = file && title.trim().length > 0;
+  const isFormValid = !!file && title.trim().length > 0;
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
@@ -31,8 +31,7 @@ export default function UploadPanel({ onUploaded }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate form
+
     let isValid = true;
     if (!file) {
       setFileError("Please select a file");
@@ -42,8 +41,7 @@ export default function UploadPanel({ onUploaded }: Props) {
       setTitleError("Please enter a contract title");
       isValid = false;
     }
-    
-    if (!isValid) return;
+    if (!isValid || !file) return;
 
     setLoading(true);
     setError(null);
@@ -53,11 +51,9 @@ export default function UploadPanel({ onUploaded }: Props) {
       form.append("title", title.trim());
       form.append("consent_store", String(consent));
       if (consent && accessPassword) form.append("access_password", accessPassword);
-      console.log("Uploading file:", file.name, "Title:", title);
       const res = await api.post("/contracts/upload", form, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("Upload successful:", res.data);
       setFile(null);
       setTitle("");
       setConsent(false);
@@ -65,7 +61,6 @@ export default function UploadPanel({ onUploaded }: Props) {
       setError(null);
       onUploaded(res.data.contract_id);
     } catch (err: any) {
-      console.error("Upload error:", err);
       const errorMsg = err?.response?.data?.detail || err?.message || "Upload failed. Please try again.";
       setError(errorMsg);
     } finally {
@@ -78,10 +73,10 @@ export default function UploadPanel({ onUploaded }: Props) {
       <h2 className="mb-3 text-sm font-semibold">Upload Contract</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block mb-1 text-xs font-medium text-slate-700">Contract Title *</label>
+          <label className="mb-1 block text-xs font-medium text-slate-700">Contract Title *</label>
           <input
             type="text"
-            placeholder="e.g. Master Service Agreement – ACME"
+            placeholder="e.g. Master Service Agreement - ACME"
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             className={`w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors ${
@@ -94,7 +89,7 @@ export default function UploadPanel({ onUploaded }: Props) {
         </div>
 
         <div>
-          <label className="block mb-1 text-xs font-medium text-slate-700">Contract File *</label>
+          <label className="mb-1 block text-xs font-medium text-slate-700">Contract File *</label>
           <div
             className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-4 py-8 text-center text-xs transition-colors ${
               fileError
@@ -102,7 +97,7 @@ export default function UploadPanel({ onUploaded }: Props) {
                 : "border-slate-300 bg-slate-50 text-slate-500 hover:border-primary-400"
             } dark:border-slate-700 dark:bg-slate-900`}
             onClick={() => {
-              const input = document.getElementById("crr-file-input") as HTMLInputElement;
+              const input = document.getElementById("crr-file-input") as HTMLInputElement | null;
               input?.click();
             }}
             onDragOver={(e) => e.preventDefault()}
@@ -112,7 +107,7 @@ export default function UploadPanel({ onUploaded }: Props) {
               if (droppedFile) handleFileSelect(droppedFile);
             }}
           >
-            <p className="font-medium">Drag & drop PDF / DOCX / TXT</p>
+            <p className="font-medium">Drag and drop PDF / DOCX / TXT</p>
             <p className="mt-1 text-[11px]">or click to browse</p>
             {file && <p className="mt-2 text-xs font-medium">{file.name}</p>}
           </div>
@@ -135,14 +130,16 @@ export default function UploadPanel({ onUploaded }: Props) {
             className="h-3 w-3 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
           />
           <span>
-            I consent to securely store this contract for trend analytics. Otherwise, only transient
-            processing is performed.
+            I consent to securely store this contract for trend analytics. Otherwise, only transient processing
+            is performed.
           </span>
         </label>
 
         {consent && (
           <div>
-            <label className="block mb-1 text-xs font-medium text-slate-700">Access Password (required to view stored document)</label>
+            <label className="mb-1 block text-xs font-medium text-slate-700">
+              Access Password (required to view stored document)
+            </label>
             <input
               type="password"
               placeholder="Set a password to protect stored contract"
@@ -153,21 +150,20 @@ export default function UploadPanel({ onUploaded }: Props) {
           </div>
         )}
 
-        {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
+        {error && <p className="text-xs font-medium text-red-500">{error}</p>}
 
         <button
           type="submit"
           disabled={loading || !isFormValid}
           className={`w-full rounded-lg px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all ${
             loading || !isFormValid
-              ? "bg-slate-400 cursor-not-allowed shadow-none"
+              ? "cursor-not-allowed bg-slate-400 shadow-none"
               : "bg-primary-600 hover:bg-primary-500 active:bg-primary-700"
           }`}
         >
-          {loading ? "Analyzing…" : "Upload & Analyze"}
+          {loading ? "Analyzing..." : "Upload and Analyze"}
         </button>
       </form>
     </div>
   );
 }
-

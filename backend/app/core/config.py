@@ -1,4 +1,3 @@
-import os
 from functools import lru_cache
 
 from pydantic import BaseSettings
@@ -7,14 +6,8 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Contract Risk Radar"
     API_V1_STR: str = "/api"
-    # When developing locally, '*' is acceptable; tighten in production.
-    BACKEND_CORS_ORIGINS: list[str] = ["*"]
-
-    POSTGRES_HOST: str = "localhost"
-    POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str = "contract_user"
-    POSTGRES_PASSWORD: str = "contract_pass"
-    POSTGRES_DB: str = "contract_radar"
+    # Set this to the frontend origin in production.
+    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
 
     JWT_SECRET_KEY: str = "CHANGE_ME_SECRET"
     JWT_ALGORITHM: str = "HS256"
@@ -28,8 +21,9 @@ class Settings(BaseSettings):
     LLM_MODEL_NAME: str = "llama-3.1-8b-instant"
     LLM_PROVIDER: str = "groq"  # "groq" or "openai"
 
-    # MongoDB connection string for storing consented contracts
+    # MongoDB Atlas connection string for users and contracts.
     MONGO_URI: str = "mongodb://localhost:27017/"
+    MONGO_DB_NAME: str = "contract_radar"
 
     class Config:
         env_file = ".env"

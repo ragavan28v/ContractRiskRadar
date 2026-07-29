@@ -6,9 +6,7 @@ interface Props {
 }
 
 export default function OverviewCards({ stats, loading }: Props) {
-  const skeleton = (
-    <div className="h-12 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
-  );
+  const skeleton = <div className="h-12 w-24 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />;
 
   return (
     <div className="grid gap-4 md:grid-cols-4">
@@ -19,9 +17,7 @@ export default function OverviewCards({ stats, loading }: Props) {
             skeleton
           ) : (
             <>
-              <span className="text-2xl font-semibold">
-                {stats.average_overall_risk.toFixed(0)}
-              </span>
+              <span className="text-2xl font-semibold">{stats.average_overall_risk.toFixed(0)}</span>
               <span className="text-xs text-slate-500">/ 100</span>
             </>
           )}
@@ -29,23 +25,16 @@ export default function OverviewCards({ stats, loading }: Props) {
       </div>
       <div className="card">
         <div className="text-xs font-medium text-slate-500">Total Contracts</div>
-        <div className="mt-2 text-2xl font-semibold">
-          {loading || !stats ? "…" : stats.total_contracts}
-        </div>
+        <div className="mt-2 text-2xl font-semibold">{loading || !stats ? "..." : stats.total_contracts}</div>
       </div>
       <div className="card">
         <div className="text-xs font-medium text-slate-500">Total Clauses</div>
-        <div className="mt-2 text-2xl font-semibold">
-          {loading || !stats ? "…" : stats.total_clauses}
-        </div>
+        <div className="mt-2 text-2xl font-semibold">{loading || !stats ? "..." : stats.total_clauses}</div>
       </div>
       <div className="card">
         <div className="text-xs font-medium text-slate-500">High Risk Clauses</div>
-        <div className="mt-2 text-2xl font-semibold text-risk-high">
-          {loading || !stats ? "…" : stats.high_risk_clauses}
-        </div>
+        <div className="mt-2 text-2xl font-semibold text-risk-high">{loading || !stats ? "..." : stats.high_risk_clauses}</div>
       </div>
     </div>
   );
 }
-

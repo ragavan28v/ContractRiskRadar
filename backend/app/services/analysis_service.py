@@ -1,12 +1,8 @@
-from sqlalchemy.orm import Session
-
-from ..models.contract import Contract
-from ..models.clause import Clause
+from ..core.mongo import contracts_collection
 
 
-def get_contract_dashboard_stats(db: Session, user_id: int) -> dict:
-    q = db.query(Contract).filter(Contract.owner_id == user_id)
-    contracts = q.all()
+async def get_contract_dashboard_stats(user_id: int) -> dict:
+    contracts = await contracts_collection.find({"owner_id": user_id}).to_list(length=1000)
     total_contracts = len(contracts)
 
     if not contracts:
@@ -23,20 +19,17 @@ def get_contract_dashboard_stats(db: Session, user_id: int) -> dict:
     risk_scores = []
     distribution = {"Low": 0, "Moderate": 0, "High": 0}
 
-    for c in contracts:
-        risk_scores.append(c.overall_risk_score)
-        total_clauses += c.total_clauses
-        high_risk_clauses += c.high_risk_clauses
+    for contract in contracts:
+        risk_scores.append(contract.get("overall_risk_score", 0.0))
+        total_clauses += contract.get("total_clauses", 0)
+        high_risk_clauses += contract.get("high_risk_clauses", 0)
+        for clause in contract.get("clauses", []):
+            level = (clause.get("risk_level") or "Low").title()
+            if level not in distribution:
+                level = "Low"
+            distribution[level] += 1
 
-    for level in distribution.keys():
-        distribution[level] = (
-            db.query(Clause)
-            .join(Contract, Clause.contract_id == Contract.id)
-            .filter(Contract.owner_id == user_id, Clause.risk_level == level)
-            .count()
-        )
-
-    avg_risk = sum(risk_scores) / len(risk_scores)
+    avg_risk = sum(risk_scores) / len(risk_scores) if risk_scores else 0.0
 
     return {
         "total_contracts": total_contracts,

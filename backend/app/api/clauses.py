@@ -1,37 +1,32 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 
 from . import get_current_active_user
-from ..core.db import get_db
-from ..models.clause import Clause
-from ..models.contract import Contract
+from ..services.contracts_service import get_owned_clause
 
 router = APIRouter(prefix="/clauses", tags=["clauses"])
 
 
 @router.get("/{clause_id}")
-def get_clause(clause_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_active_user)):
-    clause = db.query(Clause).filter(Clause.id == clause_id).first()
-    if not clause:
+async def get_clause(clause_id: int, current_user=Depends(get_current_active_user)):
+    result = await get_owned_clause(current_user["id"], clause_id)
+    if not result:
         raise HTTPException(status_code=404, detail="Clause not found")
-    contract = db.query(Contract).filter(Contract.id == clause.contract_id).first()
-    if not contract or contract.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized")
+    contract, clause = result
     return {
-        "id": clause.id,
-        "contract_id": clause.contract_id,
-        "clause_id": clause.clause_id,
-        "clause_type": clause.clause_type,
-        "text": clause.text,
-        "risk_level": clause.risk_level,
-        "risk_category": clause.risk_category,
-        "risk_score": clause.risk_score,
-        "why_risky": clause.why_risky,
-        "trigger_phrases": (clause.trigger_phrases or "").split(",") if clause.trigger_phrases else [],
-        "financial_exposure": clause.financial_exposure,
-        "power_imbalance": clause.power_imbalance,
-        "safer_alternative": clause.safer_alternative,
-        "negotiation_tip": clause.negotiation_tip,
-        "confidence_score": clause.confidence_score,
+        "id": clause.get("id"),
+        "contract_id": contract.get("_id"),
+        "clause_id": clause.get("clause_id"),
+        "clause_type": clause.get("clause_type"),
+        "text": clause.get("text"),
+        "risk_level": clause.get("risk_level"),
+        "risk_category": clause.get("risk_category"),
+        "risk_score": clause.get("risk_score"),
+        "why_risky": clause.get("why_risky"),
+        "trigger_phrases": clause.get("trigger_phrases", []),
+        "financial_exposure": clause.get("financial_exposure"),
+        "power_imbalance": clause.get("power_imbalance"),
+        "safer_alternative": clause.get("safer_alternative"),
+        "negotiation_tip": clause.get("negotiation_tip"),
+        "confidence_score": clause.get("confidence_score"),
     }
 
