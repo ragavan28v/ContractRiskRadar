@@ -2,8 +2,17 @@
 
 import axios from "axios";
 
+function normalizeApiBaseUrl(baseUrl: string): string {
+  const trimmed = baseUrl.replace(/\/+$/, "");
+  return trimmed.endsWith("/api") ? trimmed : `${trimmed}/api`;
+}
+
+const apiBaseUrl = normalizeApiBaseUrl(
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000"
+);
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api"
+  baseURL: apiBaseUrl
 });
 
 api.interceptors.request.use((config) => {
