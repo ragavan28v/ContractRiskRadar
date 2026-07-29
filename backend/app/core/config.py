@@ -1,13 +1,15 @@
 from functools import lru_cache
+from typing import Any
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, validator
 
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Contract Risk Radar"
     API_V1_STR: str = "/api"
     # Set this to the frontend origin in production.
-    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    BACKEND_CORS_ORIGIN_REGEX: str | None = r"https://.*\.netlify\.app$"
 
     JWT_SECRET_KEY: str = "CHANGE_ME_SECRET"
     JWT_ALGORITHM: str = "HS256"
@@ -28,6 +30,21 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+
+    @validator("BACKEND_CORS_ORIGINS", pre=True)
+    def parse_cors_origins(cls, value: Any) -> list[str]:
+        if value is None:
+            return []
+        if isinstance(value, str):
+            text = value.strip()
+            if not text:
+                return []
+            if text.startswith("["):
+                import json
+
+                return list(json.loads(text))
+            return [item.strip() for item in text.split(",") if item.strip()]
+        return list(value)
 
 
 @lru_cache
