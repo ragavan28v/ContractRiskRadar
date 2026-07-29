@@ -1,0 +1,28 @@
+MODERATE RISK CONTRACT – SOFTWARE MAINTENANCE AGREEMENT
+
+Effective Date: 1 March 2026
+
+Between NextGen Systems Ltd. (“Provider”) and Harbor Logistics PLC
+(“Customer”).
+
+1.  Services Provider shall provide software maintenance and support.
+
+2.  Term Two-year initial term with automatic annual renewal unless 60
+    days’ notice is given.
+
+3.  Fees Quarterly invoices payable within 30 days.
+
+4.  Service Levels Target uptime of 99.5%.
+
+5.  Confidentiality Confidentiality obligations survive for three years.
+
+6.  Intellectual Property Provider retains software ownership. Customer
+    receives a license.
+
+7.  Liability Aggregate liability limited to fees paid during the
+    previous 12 months.
+
+8.  Termination Either party may terminate after an uncured material
+    breach.
+
+9.  Governing Law England and Wales.
